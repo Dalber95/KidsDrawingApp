@@ -3,6 +3,7 @@ package pl.krusiec.kidsdrawingapp
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
@@ -56,5 +57,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         brushDialog.show()
+    }
+
+    fun paintClicked(view: View) {
+        if (view !== imageButtonCurrentPaint) {
+            val imageButton = view as ImageButton
+            val colorTag = imageButton.tag.toString()
+
+            drawingView.setColor(colorTag)
+            imageButton.setImageResource(R.drawable.pallet_selected)
+            imageButtonCurrentPaint!!.setImageResource(R.drawable.pallet_normal)
+            imageButtonCurrentPaint = view
+        }
     }
 }
