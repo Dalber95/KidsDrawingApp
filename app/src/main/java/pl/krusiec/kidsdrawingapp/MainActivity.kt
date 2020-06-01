@@ -1,10 +1,13 @@
 package pl.krusiec.kidsdrawingapp
 
 import android.Manifest
+import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
@@ -13,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_brush_size.*
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,9 +37,30 @@ class MainActivity : AppCompatActivity() {
 
         ibGallery.setOnClickListener {
             if (isReadStorageAllowed()) {
+                val pickPhotoIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(pickPhotoIntent, GALLERY)
 
             } else {
                 requestStoragePermission()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == GALLERY) {
+                try {
+                    if (data!!.data != null) {
+                        ivBackground.visibility = View.VISIBLE
+                        ivBackground.setImageURI(data.data)
+                    } else {
+                        Toast.makeText(this, "Error in parsing the image or its corrupted.", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }
@@ -119,5 +144,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val STORAGE_PERMISSION_CODE = 1
+        private const val GALLERY = 2
     }
 }
